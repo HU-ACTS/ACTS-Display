@@ -1,0 +1,1 @@
+INSERT INTO `ACTS`.`RESULTS` (`user`,`date`,`result`) VALUES (1, CURDATE(), 2000);

@@ -1,0 +1,1 @@
+INSERT INTO ACTS.USERS (user, goal, image) VALUES (1, 'Ik wil weer naar de supermarkt kunnen lopen', 2);
