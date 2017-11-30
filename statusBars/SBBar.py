@@ -4,27 +4,17 @@ except ImportError:
     from tkinter import *
 from PIL import Image, ImageTk, ImageFilter
 
-class SBCrossfade():
-
-    def __init__(self, image, width, height, canvas):
-        self.image = image
+class SBBar():
+    def __init__(self, width, height, size, canvas):
         self.width = width
         self.height = height
+        self.size = size
         self.canvas = canvas
-        self.fadeImage = None
+        self.barImage = None
+        self.transparent = Image.open("images/transparency/background-40P.png").resize((self.width, size),Image.ANTIALIAS)
 
     def update(self, state):
-        # Prevent overcompletion
-        if state > 100:
-            state = 100
-
-        #Create faded cropped image with GaussianBlur
-        fade = self.image.filter(ImageFilter.GaussianBlur(3))
-        fade = fade.crop( ( self.width - (self.width * (state/100)), 0, self.width, self.height) )
-        fade = ImageTk.PhotoImage(fade)
-        self.fadeImage = fade
-        filterImage = self.canvas.create_image(self.width, 0, image=fade, anchor=NE)
-        self.canvas.lower(filterImage)
-
-    def setImage(self, image):
-        self.image = image
+        background = ImageTk.PhotoImage(self.transparent)
+        self.barImage = background
+        bck = self.canvas.create_image(0, self.height - self.size, image=background, anchor=NW, tag="goal_box")
+        self.targetID = self.canvas.create_rectangle(0, self.height - self.size, self.width * (state/100), self.height, tag="trans_bar", fill="#1adb37", outline="")

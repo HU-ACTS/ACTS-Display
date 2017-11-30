@@ -15,7 +15,7 @@ class Configuraion():
             self.config.add_section('System')
             self.config.set('System', 'id', 0)
             self.config.set('System', 'bar', 0)
-            self.config.set('System', 'image', 1)
+            self.config.set('System', 'image', "forest-1.jpg")
             self.config.set('System', 'goal', 'Wat wil ik bereiken')
             self.config.set('System', 'months', def_months)
             self.config.add_section('Database')
@@ -31,10 +31,11 @@ class Configuraion():
 
     ## setUser
     #   Sets requisted user data
-    def setUser(self, id, goal, image):
+    def setUser(self, id, goal, image, bar):
         self.config.set('System', 'id', id)
         self.config.set('System', 'image', image)
         self.config.set('System', 'goal', goal)
+        self.config.set('System', 'bar', bar)
         with open('acts.cfg', 'wb') as configfile:
             self.config.write(configfile)
 
@@ -48,6 +49,7 @@ class Configuraion():
         self.bar    = self.config.getint('System', 'bar')
         self.id     = self.config.getint('System', 'id')
         self.goal   = self.config.get('System', 'goal')
+        self.image  = self.config.get('System', 'image')
 
         self.host   = self.config.get('Database', 'host')
         self.db     = self.config.get('Database', 'db')

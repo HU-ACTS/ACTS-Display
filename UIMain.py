@@ -8,7 +8,7 @@ from datetime import datetime
 import Configuration as conf
 import sys
 sys.path.append('statusBars/')
-import SBSpheres, SBCrossfade
+import SBSpheres, SBCrossfade, SBBar, SBBarfade
 import DBConnector
 class UIMain():
     targetID  = 0
@@ -24,7 +24,7 @@ class UIMain():
     sphereFourID    = 0
     running = True
 
-    def __init__(self, width, height, statusStyle, conf, dbc):
+    def __init__(self, width, height, conf, dbc):
         self.state = 0
         self.width = width
         self.height = height
@@ -34,19 +34,22 @@ class UIMain():
         self.root.geometry("{0}x{1}".format(self.width, self.height))
         self.root.attributes('-fullscreen', True)
         self.canvas = Canvas(self.root, width=self.width, height=self.height, bd=0, highlightthickness=0)
-        self.background = Image.open("images/forest-1.jpg").resize((self.width, self.height),Image.ANTIALIAS)
+        self.background = Image.open("images/" + conf.image).resize((self.width, self.height),Image.ANTIALIAS)
         self.transparent = Image.open("images/transparency/background-20P.png").resize((self.width, self.height),Image.ANTIALIAS)
         self.background_image = None
         self.tmptrans = None
-        self.setStatus(self.configuration.bar)
+        self.setStatus(int(conf.bar))
 
     def setStatus(self, statusStyle):
+        print(statusStyle)
         if statusStyle == 0:
             self.statusBar = SBSpheres.SBSpheres(400, 50, 6, self.width, self.height, self.canvas)
         elif statusStyle == 1:
             self.statusBar = SBCrossfade.SBCrossfade(self.background, self.width, self.height, self.canvas)
         elif statusStyle == 2:
-            pass
+            self.statusBar = SBBar.SBBar(self.width, self.height, 40, self.canvas)
+        elif statusStyle == 3:
+            self.statusBar = SBBarfade.SBBarfade(self.background, self.width, self.height, 40, self.canvas)
         else:
             self.statusBar = SBSpheres.SBSpheres(340, 20, 10, self.width, self.height, self.canvas)
 
@@ -61,11 +64,10 @@ class UIMain():
             hour = str(" " + str(dt.hour))
         else:
             hour = str(dt.hour)
-        self.canvas.itemconfig(date, text=("" + str(dt.hour) + ":" + minutes))
-        #self.root.after(30000, lambda: self.setDateTime(date, time))
+        self.canvas.itemconfig(date, text=("" + hour + ":" + minutes))
 
     def drawGoal(self, offset):
-        self.targetID = self.canvas.create_text(int(abs(self.width / 2)), offset + 20, justify=CENTER, tag="goal", text="Ik wil dit werkend krijgen! :) echt ik wil dit zo graag werkend hebben", width=self.width, fill="white", font=("Helvetica", 30), anchor=CENTER)
+        self.targetID = self.canvas.create_text(int(abs(self.width / 2)), offset + 20, justify=CENTER, tag="goal", text=self.configuration.goal, width=(self.width-40), fill="white", font=("Helvetica", 30), anchor=CENTER)
         box = self.canvas.bbox(self.targetID)
         bck40 = self.transparent.resize((box[2], box[3]),Image.ANTIALIAS)
         bck40_img = ImageTk.PhotoImage(bck40)
@@ -87,9 +89,12 @@ class UIMain():
         self.dateID = self.canvas.create_text(int(abs(self.width / 2)), offset + 240, text="9 November", fill="white", font=("Helvetica", 30), anchor=CENTER)
 
         # Update information
-        self.database.poll()
-
-        self.statusBar.update(45)
+        try:
+            state = self.database.poll()
+            self.statusBar.update(state)
+        except:
+            print("Failed to load data")
+            self.statusBar.update(50)
         self.setDateTime(self.timeID, self.dateID)
 
         # Set the background image
@@ -101,10 +106,10 @@ class UIMain():
         #self.displayStateBalls(340, 5, 50, 10)
         self.canvas.pack()
         self.state += 0.1
-        #self.root.quit()
+
         # Updater
         if self.running:
-            self.root.after(1000, self.display)
+            self.root.after(5000, self.display)
         else:
             self.root.quit()
 

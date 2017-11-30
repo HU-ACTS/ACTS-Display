@@ -16,9 +16,10 @@ class Display():
         disp.start()
 
     def displayMain(self):
+        print("User mode")
         dbc = DBConnector.DBConnector(self.conf)
         dbc.configureUser()
-        disp = UIMain.UIMain(self.width, self.height, 0, self.conf, dbc)
+        disp = UIMain.UIMain(self.width, self.height, self.conf, dbc)
         disp.start()
 
 if __name__ == "__main__":
