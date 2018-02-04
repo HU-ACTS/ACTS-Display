@@ -1,7 +1,22 @@
-class SBSpheres():
+## @package Default
+#  Configuration module
+#
+#  SBSpehere module is part of the graphical modules for status display
 
-    ## Initialize
-    #   Init setsup the positional argumnts of the sphere based UI
+class SBSpheres():
+    ## SBSpheres Class
+    #
+    #  SBSphere displays a spehere based status bar
+
+    ## __init__
+    #
+    #  Init setsup the positional argumnts of the sphere based UI
+    #  @param ypos sphere height
+    #  @param offset space between speheres
+    #  @param amount amount of spheres
+    #  @param width window width
+    #  @param height window height
+    #  @param canvas tkinter canvas
     def __init__(self, ypos, offset, amount, width, height, canvas):
         self.ypos = ypos
         self.offset = offset
@@ -10,6 +25,10 @@ class SBSpheres():
         self.height = height
         self.canvas = canvas
 
+    ## update
+    #
+    #  sphere status refresh
+    #  @param state of the user
     def update(self, state):
         # Prevent overcompletion
         if state > 100:
@@ -36,7 +55,12 @@ class SBSpheres():
             self.drawBall((self.offset + ( size / 2 ) + ( (size + self.offset ) * segment) ), self.ypos, size, segment_state)
 
     ## drawBall
+    #
     #  Draws spheres to screen with a default fill of 100
+    #  @param x x-position of spehere
+    #  @param y y-pos of sphere
+    #  @param size of sphere
+    #  @param fill transparency 1-100 (not transparent)
     def drawBall( self, x, y, size, fill=100 ):
         radius = size / 2
         filler = radius * float( fill / 100.0 )

@@ -1,3 +1,7 @@
+## @package Default
+#  UIMain module
+#
+#  The UIMain module defines
 try:
     from Tkinter import *
 except ImportError:
@@ -10,7 +14,24 @@ import sys
 sys.path.append('statusBars/')
 import SBSpheres, SBCrossfade, SBBar, SBBarfade
 import DBConnector
+
 class UIMain():
+    ## UIMain Class
+    #
+    #  The UIMain class defines the main user interface Class
+    #  @var targetID target id
+    #  @var nameID name text id
+    #  @var timeID time text id
+    #  @var dateID date text id
+    #  @var happyID preference icon happy
+    #  @var okID preference icon ok
+    #  @var unhappyID preference unhappy icon
+    #  @var sphereOneID one sphere id
+    #  @var sphereTwoID second sphere id
+    #  @var sphereThreeID third sphere id
+    #  @var sphereFourID fourth sphere id
+    #  @var running running state
+
     targetID  = 0
     nameID    = 0
     timeID    = 0
@@ -24,6 +45,11 @@ class UIMain():
     sphereFourID    = 0
     running = True
 
+    ## __init__
+    #
+    #  constructor for the UI configuration window
+    #  @param width window width
+    #  @param height window height
     def __init__(self, width, height, conf, dbc):
         self.state = 0
         self.width = width
@@ -40,19 +66,34 @@ class UIMain():
         self.tmptrans = None
         self.setStatus(int(conf.bar))
 
+    ## setStatus
+    #
+    #  change status display style
+    #  Sphere display: 0, blur over background: 1,
+    #  simpel load bar: 2, combination between 1 and 2: 3
     def setStatus(self, statusStyle):
         print(statusStyle)
         if statusStyle == 0:
+            print("Using Spheres")
             self.statusBar = SBSpheres.SBSpheres(400, 50, 6, self.width, self.height, self.canvas)
         elif statusStyle == 1:
+            print("Using SBCrossfade")
             self.statusBar = SBCrossfade.SBCrossfade(self.background, self.width, self.height, self.canvas)
         elif statusStyle == 2:
+            print("Using bar")
             self.statusBar = SBBar.SBBar(self.width, self.height, 40, self.canvas)
         elif statusStyle == 3:
+            print("Using Barfade")
             self.statusBar = SBBarfade.SBBarfade(self.background, self.width, self.height, 40, self.canvas)
         else:
-            self.statusBar = SBSpheres.SBSpheres(340, 20, 10, self.width, self.height, self.canvas)
+            print("Using Default")
+            self.statusBar = SBSpheres.SBSpheres(400, 30, 10, self.width, self.height, self.canvas)
 
+    ## setDateTime
+    #
+    #  change date time on the display
+    #  @param date dateID on screen
+    #  @param time timeID on screen
     def setDateTime(self, date, time):
         dt = datetime.now()
         self.canvas.itemconfig(date, text=("" + str(dt.day) + " " + self.configuration.months[dt.month]))
@@ -66,6 +107,9 @@ class UIMain():
             hour = str(dt.hour)
         self.canvas.itemconfig(date, text=("" + hour + ":" + minutes))
 
+    ## drawGoal
+    #
+    #  set goal with black transparent background
     def drawGoal(self, offset):
         self.targetID = self.canvas.create_text(int(abs(self.width / 2)), offset + 20, justify=CENTER, tag="goal", text=self.configuration.goal, width=(self.width-40), fill="white", font=("Helvetica", 30), anchor=CENTER)
         box = self.canvas.bbox(self.targetID)
@@ -77,6 +121,7 @@ class UIMain():
         self.canvas.pack()
 
     ## Display
+    #
     #   Display function, set background and adds
     def display(self, offset=30):
         # Clear and reload
@@ -94,7 +139,7 @@ class UIMain():
             self.statusBar.update(state)
         except:
             print("Failed to load data")
-            self.statusBar.update(50)
+            self.statusBar.update(50.0)
         self.setDateTime(self.timeID, self.dateID)
 
         # Set the background image
@@ -113,11 +158,17 @@ class UIMain():
         else:
             self.root.quit()
 
+    ## stop
+    #
+    #  stop the display mainloop
     def stop(self):
         print("stopping main window")
         self.running = False
         self.root.quit()
 
+    ## Start
+    #
+    # Starts display
     def start(self):
         self.display()
         self.root.mainloop()
